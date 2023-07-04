@@ -41,7 +41,7 @@ class Users extends BaseController
                 "avatar" => $user->avatar,
                 "name" => esc($user->name),
                 "email" => esc($user->email),
-                "status" => ($user->status == true ? "<span class='text-success'>Ativo</span>" : "<span class='text-warning'>Inativo</span>"),
+                "status" => ($user->status == true ? "<i class='fa fa-unlock text-success'></i>&nbsp;Ativo" : "<i class='fa fa-lock text-warning'></i>&nbsp;Inativo"),
             ];
         }
 

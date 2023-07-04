@@ -12,19 +12,17 @@ class UserFakerSeeder extends Seeder
 
         $faker = \Faker\Factory::create();
 
-        $quantity_users = 50;
+        $quantity_users = 20000;
 
         $pushUsers = [];
 
         for($i = 0; $i < $quantity_users; $i++) {
-
             array_push($pushUsers, [
                 "name" => $faker->unique()->name,
                 "email" => $faker->unique()->email,
                 "password_hash" => "123456",
-                "status" => true,
+                "status" => $faker->numberBetween(0, 1),
             ]);
-
         }
 
         $userModel->skipValidation(true)
