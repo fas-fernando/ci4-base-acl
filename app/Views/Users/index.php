@@ -6,9 +6,9 @@
 
 <!------------------ Estilos ------------------------>
 
-<?= $this->section("style") ?>
+<?= $this->section("styles") ?>
 
-<!-- Inserir os estilos dessa página nessa Section -->
+<link href="https://cdn.datatables.net/v/bs4/dt-1.13.4/r-2.4.1/datatables.min.css" rel="stylesheet" />
 
 <?= $this->endSection() ?>
 
@@ -19,49 +19,16 @@
 <div class="row">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
         <div class="block">
-            <div class="title"><strong>Compact Table</strong></div>
             <div class="table-responsive">
-                <table class="table table-striped table-sm">
+                <table class="table table-striped table-sm" id="ajaxTable" style="width:100%">
                     <thead>
                         <tr>
-                            <th>#</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Username</th>
+                            <th>Imagem</th>
+                            <th>Nome</th>
+                            <th>E-mail</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>@mdo</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td>Jacob</td>
-                            <td>Thornton</td>
-                            <td>@fat</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td>Larry</td>
-                            <td>the Bird</td>
-                            <td>@twitter </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">4</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>@mdo</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">5</th>
-                            <td>Jacob</td>
-                            <td>Thornton</td>
-                            <td>@fat</td>
-                        </tr>
-                    </tbody>
                 </table>
             </div>
         </div>
@@ -74,6 +41,26 @@
 
 <?= $this->section("scripts") ?>
 
-<!-- Inserir os scripts dessa página nessa Section -->
+<script src="https://cdn.datatables.net/v/bs4/dt-1.13.4/r-2.4.1/datatables.min.js"></script>
+
+<script>
+    $('#ajaxTable').DataTable({
+        ajax: '<?= site_url("users/getUsers") ?>',
+        columns: [
+            {
+                data: 'avatar'
+            },
+            {
+                data: 'name'
+            },
+            {
+                data: 'email'
+            },
+            {
+                data: 'status'
+            },
+        ],
+    });
+</script>
 
 <?= $this->endSection() ?>
