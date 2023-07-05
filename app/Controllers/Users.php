@@ -25,9 +25,7 @@ class Users extends BaseController
     public function getUsers()
     {
         if(!$this->request->isAJAX()) {
-
             return redirect()->back();
-
         }
 
         $attr = ["id", "name", "email", "status", "avatar"];
@@ -74,6 +72,32 @@ class Users extends BaseController
         ];
 
         return view("Users/edit", $data);
+    }
+
+    public function update()
+    {
+        if(!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $return["token"] = csrf_hash();
+        $post = $this->request->getPost();
+
+        
+        $user = $this->searchUserOr404($post["id"]);
+        echo "<pre>";
+        print_r($user);
+        echo "<hr><br>";
+        $user->fill($post);
+        echo "<pre>";
+        print_r($user);
+        exit;
+
+        return $this->response->setJSON($return);
+
+        echo "<pre>";
+        print_r($post);
+        echo "</pre>";
     }
 
     private function searchUserOr404(int $id = null)
