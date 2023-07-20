@@ -34,6 +34,7 @@
 
             <h5 class="card-title mt-2"><?= esc($user->name) ?></h5>
             <p class="card-text"><strong>E-mail:&nbsp;</strong> <?= esc($user->email) ?></p>
+            <p class="card-text"><strong>Status:&nbsp;</strong> <?= ($user->status == true) ? "<span class='badge badge-pill badge-success'>Ativo</span>" : "<span class='badge badge-pill badge-warning'>Inativo</span>"  ?></p>
             <p class="card-text"><strong>Criado:&nbsp;</strong> <?= $user->created_at->humanize() ?></p>
             <p class="card-text"><strong>Atualizado:&nbsp;</strong> <?= $user->updated_at->humanize() ?></p>
 
