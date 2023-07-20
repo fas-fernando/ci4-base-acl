@@ -1,0 +1,42 @@
+<?= $this->extend("Layout/main") ?>
+
+<!------------------ Título ------------------------>
+
+<?= $this->section("title") ?> <?= $title ?> <?= $this->endSection() ?>
+
+<!------------------ Estilos ------------------------>
+
+<?= $this->section("styles") ?>
+
+
+<?= $this->endSection() ?>
+
+<!------------------ Conteúdo ------------------------>
+
+<?= $this->section("content") ?>
+
+<div class="row">
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+        <div class="block">
+            <div class="block-body">
+                <?= form_open_multipart("users/delete/$user->id") ?>
+                    <div class="alert alert-warning" role="alert">
+                        Tem certeza que deseja excluir esse usuário?
+                    </div>
+                    <div class="form-group mt-5 mb-2">
+                        <input type="submit" id="btn-save" value="Sim, pode excluir" class="btn btn-primary">
+                        <a href="<?= site_url("users/show/$user->id") ?>" class="btn btn-secondary ml-3">Cancelar</a>
+                    </div>
+                <?= form_close() ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?= $this->endSection() ?>
+
+<!------------------ Scripts ------------------------>
+
+<?= $this->section("scripts") ?>
+
+<?= $this->endSection() ?>

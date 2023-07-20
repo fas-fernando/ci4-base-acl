@@ -9,8 +9,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="all,follow">
 
-  <link rel="stylesheet" href="<?= site_url("resources/vendor/bootstrap/css/bootstrap.min.css") ?>">
-  <link rel="stylesheet" href="<?= site_url("resources/vendor/font-awesome/css/font-awesome.min.css") ?>">
+  <link rel="stylesheet" href="<?= site_url("resources/plugin/bootstrap/css/bootstrap.min.css") ?>">
+  <link rel="stylesheet" href="<?= site_url("resources/plugin/font-awesome/css/font-awesome.min.css") ?>">
   <link rel="stylesheet" href="<?= site_url("resources/css/font.css") ?>">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli:300,400,700">
   <link rel="stylesheet" href="<?= site_url("resources/css/style.default.css") ?>" id="theme-stylesheet">
@@ -54,12 +54,12 @@
     </div>
   </div>
 
-  <script src="<?= site_url("resources/vendor/jquery/jquery.min.js") ?>"></script>
-  <script src="<?= site_url("resources/vendor/popper.js/umd/popper.min.js") ?>"> </script>
-  <script src="<?= site_url("resources/vendor/bootstrap/js/bootstrap.min.js") ?>"></script>
-  <script src="<?= site_url("resources/vendor/jquery.cookie/jquery.cookie.js") ?>"> </script>
-  <script src="<?= site_url("resources/vendor/chart.js/Chart.min.js") ?>"></script>
-  <script src="<?= site_url("resources/vendor/jquery-validation/jquery.validate.min.js") ?>"></script>
+  <script src="<?= site_url("resources/plugin/jquery/jquery.min.js") ?>"></script>
+  <script src="<?= site_url("resources/plugin/popper.js/umd/popper.min.js") ?>"> </script>
+  <script src="<?= site_url("resources/plugin/bootstrap/js/bootstrap.min.js") ?>"></script>
+  <script src="<?= site_url("resources/plugin/jquery.cookie/jquery.cookie.js") ?>"> </script>
+  <script src="<?= site_url("resources/plugin/chart.js/Chart.min.js") ?>"></script>
+  <script src="<?= site_url("resources/plugin/jquery-validation/jquery.validate.min.js") ?>"></script>
   <script src="<?= site_url("resources/js/charts-home.js") ?>"></script>
   <script src="<?= site_url("resources/js/front.js") ?>"></script>
 

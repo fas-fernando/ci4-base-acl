@@ -61,7 +61,6 @@ class Users extends BaseController
                 "avatar" => $user->avatar = img($avatar),
                 "name" => anchor("users/show/$user->id", esc($user->name), 'title="Exibir usuário ' . esc($user->name) . '"'),
                 "email" => esc($user->email),
-                // "status" => ($user->status == true ? "<i class='fa fa-unlock text-success'></i>&nbsp;Ativo" : "<i class='fa fa-lock text-warning'></i>&nbsp;Inativo"),
                 "status" => $user->showSituation(),
             ];
         }
