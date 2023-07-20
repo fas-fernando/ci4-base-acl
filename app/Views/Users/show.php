@@ -34,7 +34,7 @@
 
             <h5 class="card-title mt-2"><?= esc($user->name) ?></h5>
             <p class="card-text"><strong>E-mail:&nbsp;</strong> <?= esc($user->email) ?></p>
-            <p class="card-text"><strong>Status:&nbsp;</strong> <?= ($user->status == true) ? "<span class='badge badge-pill badge-success'>Ativo</span>" : "<span class='badge badge-pill badge-warning'>Inativo</span>"  ?></p>
+            <p class="card-text"><strong>Status:&nbsp;</strong> <?= $user->showSituation()  ?></p>
             <p class="card-text"><strong>Criado:&nbsp;</strong> <?= $user->created_at->humanize() ?></p>
             <p class="card-text"><strong>Atualizado:&nbsp;</strong> <?= $user->updated_at->humanize() ?></p>
 
@@ -45,7 +45,12 @@
                 <div class="dropdown-menu">
                     <a class="dropdown-item" href="<?= site_url("users/edit/$user->id") ?>">Editar usuário</a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">Separated link</a>
+
+                    <?php if($user->deleted_at == null) : ?>
+                        <a class="dropdown-item" href="<?= site_url("users/delete/$user->id") ?>">Excluir usuário</a>
+                    <?php else : ?>
+                        <a class="dropdown-item" href="<?= site_url("users/restore/$user->id") ?>">Restaurar usuário</a>
+                    <?php endif ?>
                 </div>
             </div>
             <a href="<?= site_url("users") ?>" class="btn btn-secondary ml-3">Voltar</a>

@@ -29,20 +29,40 @@ class Users extends BaseController
             return redirect()->back();
         }
 
-        $attr = ["id", "name", "email", "status", "avatar"];
+        $attr = ["id", "name", "email", "status", "avatar", "deleted_at"];
 
         $users = $this->userModel->select($attr)
+            ->withDeleted(true)
             ->orderBy("id", "DESC")
             ->findAll();
 
         $data = [];
 
         foreach ($users as $key => $user) {
+            if($user->avatar != null) {
+                $avatar = [
+                    "src" => site_url("users/showAvatar/$user->avatar"),
+                    "class" => "rounded-circle img-fluid",
+                    "alt" => esc($user->name),
+                    "width" => "50",
+                    "title" => $user->name,
+                ];
+            } else {
+                $avatar = [
+                    "src" => site_url("resources/img/user-default.png"),
+                    "class" => "rounded-circle img-fluid",
+                    "alt" => "Usuário padrão",
+                    "width" => "50",
+                    "title" => $user->name,
+                ];
+            }
+
             $data[] = [
-                "avatar" => $user->avatar,
+                "avatar" => $user->avatar = img($avatar),
                 "name" => anchor("users/show/$user->id", esc($user->name), 'title="Exibir usuário ' . esc($user->name) . '"'),
                 "email" => esc($user->email),
-                "status" => ($user->status == true ? "<i class='fa fa-unlock text-success'></i>&nbsp;Ativo" : "<i class='fa fa-lock text-warning'></i>&nbsp;Inativo"),
+                // "status" => ($user->status == true ? "<i class='fa fa-unlock text-success'></i>&nbsp;Ativo" : "<i class='fa fa-lock text-warning'></i>&nbsp;Inativo"),
+                "status" => $user->showSituation(),
             ];
         }
 
@@ -153,6 +173,52 @@ class Users extends BaseController
         $return["errors_model"] = $this->userModel->errors();
         
         return $this->response->setJSON($return);
+    }
+
+    public function delete(int $id = null)
+    {
+        $user = $this->searchUserOr404($id);
+
+        if($user->deleted_at != null) {
+            return redirect()->back()->with("info", "Esse usuário já encontra-se excluído");
+        }
+
+        if($this->request->getMethod() === "post") {
+            $this->userModel->delete($user->id);
+
+            if($user->avatar != null) {
+                $this->removeImageFileSystem($user->avatar);
+            }
+
+            $user->avatar = null;
+            $user->status = false;
+
+            $this->userModel->protect(false)->save($user);
+
+            return redirect()->to(site_url("users"))->with("success", "Usuário $user->name excluído com sucesso");
+        }
+
+        $data = [
+            "title" => "Excluir o usuário " . esc($user->name),
+            "user" => $user,
+        ];
+
+        return view("Users/delete", $data);
+    }
+
+    public function restore(int $id = null)
+    {
+        $user = $this->searchUserOr404($id);
+
+        if($user->deleted_at == null) {
+            return redirect()->back()->with("info", "Apenas usuários excluídos podem ser restaurado");
+        }
+        
+        $user->deleted_at = null;
+        
+        $this->userModel->protect(false)->save($user);
+
+        return redirect()->back()->with("success", "Usuário $user->name restaurado com sucesso");
     }
 
     public function editAvatar(int $id = null)
