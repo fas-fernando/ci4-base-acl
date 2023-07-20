@@ -167,6 +167,78 @@ class Users extends BaseController
         return view("Users/edit_avatar", $data);
     }
 
+    public function upload()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $return["token"] = csrf_hash();
+
+        $validation = service("validation");
+
+        $rules = [
+            'avatar' => 'uploaded[avatar]|max_size[avatar,1024]|ext_in[avatar,png,jpg,jpeg]',
+        ];
+
+        $feedback = [
+            "avatar" => [
+                "uploaded" => "Por favor escolha uma imagem",
+                "max_size" => "A imagem não pode ser maior de 1024 MB",
+                "ext_in" => "Por favor escolha imagens jpg, jpeg ou png",
+            ],
+        ];
+
+        $validation->setRules($rules, $feedback);
+
+        if (!$validation->withRequest($this->request)->run()) {
+            $return["error"] = "Por favor, verifique os erros abaixo e tente novamente.";
+            $return["errors_model"] = $validation->getErrors();
+
+            return $this->response->setJSON($return);
+        }
+
+        $post = $this->request->getPost();
+        $user = $this->searchUserOr404($post["id"]);
+
+        $avatar = $this->request->getFile('avatar');
+
+        list($width, $height) = getimagesize($avatar->getPathName());
+
+        if($width < "300" || $height < "300") {
+            $return["error"] = "Por favor, verifique os erros abaixo e tente novamente.";
+            $return["errors_model"] = ["dimension" => "A imagem não pode ser menor que 300 x 300 pixels"];
+
+            return $this->response->setJSON($return);
+        }
+
+        $imagePath = $avatar->store("users");
+        $imagePath = WRITEPATH . "uploads/$imagePath";
+
+        $this->manipulateImage($imagePath, $user->id);
+
+        $oldImage = $user->avatar;
+
+        $user->avatar = $avatar->getName();
+
+        $this->userModel->save($user);
+
+        if($oldImage != null) {
+            $this->removeImageFileSystem($oldImage);
+        }
+
+        session()->setFlashdata("success", "Imagem atualizada com sucesso.");
+
+        return $this->response->setJSON($return);
+    }
+
+    public function showAvatar(string $image = null)
+    {
+        if($image != null) {
+            $this->showFile("users", $image);
+        }
+    }
+
     private function searchUserOr404(int $id = null)
     {
         $user = $this->userModel->withDeleted(true)->find($id);
@@ -176,5 +248,36 @@ class Users extends BaseController
         }
 
         return $user;
+    }
+
+    private function manipulateImage(string $imagePath, int $user_id)
+    {
+        service('image')
+            ->withFile($imagePath)
+            ->fit(300, 300, 'center')
+            ->save($imagePath);
+
+        $currentYear = date("Y");
+
+        \Config\Services::image('imagick')
+            ->withFile($imagePath)
+            ->text("ESTBANK $currentYear - User: $user_id", [
+                'color'      => '#fff',
+                'opacity'    => 0.5,
+                'withShadow' => false,
+                'hAlign'     => 'center',
+                'vAlign'     => 'bottom',
+                'fontSize'   => 20,
+            ])
+            ->save($imagePath);
+    }
+
+    private function removeImageFileSystem(string $image)
+    {
+        $imagePath = WRITEPATH . "uploads/users/$image";
+
+        if(is_file($imagePath)) {
+            unlink($imagePath);
+        }
     }
 }

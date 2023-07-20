@@ -26,7 +26,7 @@
                 <?php if ($user->avatar == null) : ?>
                     <img src="<?= site_url("resources/img/user-default.png") ?>" alt="User Default" class="card-img-top" style="width: 90%">
                 <?php else : ?>
-                    <img src="<?= site_url("users/avatar/$user->avatar") ?>" alt="<?= esc($user->avatar) ?>" class="card-img-top" style="width: 90%">
+                    <img src="<?= site_url("users/showAvatar/$user->avatar") ?>" alt="<?= esc($user->avatar) ?>" class="card-img-top" style="width: 90%">
                 <?php endif ?>
                 <a href="<?= site_url("users/editAvatar/$user->id") ?>" class="btn btn-outline-info btn-sm mt-3">Alterar imagem</a>
             </div>

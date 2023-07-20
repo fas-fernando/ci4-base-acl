@@ -55,4 +55,23 @@ abstract class BaseController extends Controller
 
         // E.g.: $this->session = \Config\Services::session();
     }
+
+    protected function showFile(string $destiny, string $file)
+    {
+        $path = WRITEPATH . "uploads/$destiny/$file";
+
+        $fileInfo = new \finfo(FILEINFO_MIME);
+
+        $fileType = $fileInfo->file($path);
+
+        $fileSize = filesize($path);
+
+        header("Content-Type: $fileType");
+
+        header("Content-Length: $fileSize");
+
+        readfile($path);
+
+        exit;
+    }
 }
