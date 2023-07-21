@@ -16,15 +16,15 @@
 <?= $this->section("content") ?>
 
 <div class="row">
-    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
         <div class="block">
             <div class="block-body">
                 <div id="response"></div>
-                <?= form_open("/", ["id" => "form"], ["id" => "$user->id"]) ?>
-                    <?= $this->include("Users/_form") ?>
+                <?= form_open("/", ["id" => "form"], ["id" => "$group->id"]) ?>
+                    <?= $this->include("Groups/_form") ?>
                     <div class="form-group mt-5 mb-2">
                         <input type="submit" id="btn-save" value="Salvar" class="btn btn-primary">
-                        <a href="<?= site_url("users") ?>" class="btn btn-secondary ml-3">Voltar</a>
+                        <a href="<?= site_url("groups") ?>" class="btn btn-secondary ml-3">Voltar</a>
                     </div>
                 <?= form_close() ?>
             </div>
@@ -45,7 +45,7 @@
 
             $.ajax({
                 type: "POST",
-                url: "<?= site_url("users/store") ?>",
+                url: "<?= site_url("groups/store") ?>",
                 data: new FormData(this),
                 dataType: "json",
                 contentType: false,
@@ -61,13 +61,7 @@
                     $("[name=csrf_ordem]").val(response.token);
                     
                     if(!response.error) {
-                        
-                        if(response.info) {
-                            $("#response").html("<div class='alert alert-info'>" + response.info + "</div>");
-                        } else {
-                            window.location.href = "<?= site_url("users/show/") ?>" + response.id;
-                        }
-                        
+                        window.location.href = "<?= site_url("groups/show/") ?>" + response.id;
                     } else {
                         $("#response").html("<div class='alert alert-danger'>" + response.error + "</div>");
 

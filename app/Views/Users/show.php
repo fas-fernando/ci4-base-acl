@@ -21,12 +21,16 @@
 
 <div class="row">
     <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
-        <div class="block">
+        <div class="user-block block">
             <div class="text-center">
                 <?php if ($user->avatar == null) : ?>
-                    <img src="<?= site_url("resources/img/user-default.png") ?>" alt="User Default" class="card-img-top" style="width: 90%">
+                    <div class="avatar" style="width: 250px; height: 230px">
+                        <img src="<?= site_url("resources/img/user-default.png") ?>" alt="User Default" class="card-img-top" style="width: 90%">
+                    </div>
                 <?php else : ?>
-                    <img src="<?= site_url("users/showAvatar/$user->avatar") ?>" alt="<?= esc($user->avatar) ?>" class="card-img-top" style="width: 90%">
+                    <div class="avatar" style="width: 250px; height: 230px">
+                        <img src="<?= site_url("users/showAvatar/$user->avatar") ?>" alt="<?= esc($user->avatar) ?>" class="card-img-top" style="width: 90%">
+                    </div>
                 <?php endif ?>
                 <a href="<?= site_url("users/editAvatar/$user->id") ?>" class="btn btn-outline-info btn-sm mt-3">Alterar imagem</a>
             </div>

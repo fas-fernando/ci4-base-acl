@@ -1,22 +1,14 @@
 <div class="form-group">
-    <label class="form-control-label">Nome completo</label>
-    <input type="text" placeholder="Insira o nome completo" class="form-control" name="name" value="<?= esc($user->name) ?>">
+    <label class="form-control-label">Nome</label>
+    <input type="text" placeholder="Insira o nome do grupo" class="form-control" name="name" value="<?= esc($group->name) ?>">
 </div>
 <div class="form-group">
-    <label class="form-control-label">E-mail</label>
-    <input type="email" placeholder="Insira o e-mail de acesso" class="form-control" name="email" value="<?= esc($user->email) ?>">
-</div>
-<div class="form-group">
-    <label class="form-control-label">Senha</label>
-    <input type="password" placeholder="Insira a senha de acesso" class="form-control" name="password">
-</div>
-<div class="form-group">
-    <label class="form-control-label">Confirmar senha</label>
-    <input type="password" placeholder="Confirme a senha de acesso" class="form-control" name="password_confirmation">
+    <label class="form-control-label">Descrição</label>
+    <input type="text" placeholder="Insira a descrição do grupo" class="form-control" name="description" value="<?= esc($group->description) ?>">
 </div>
 
 <div class="custom-control custom-checkbox">
-    <input type="hidden" name="status" value="0">
-  <input type="checkbox" class="custom-control-input" name="status" value="1" id="status" <?= ($user->status == true) ? "checked" : ""  ?>>
-  <label class="custom-control-label" for="status">Usuário ativo</label>
+    <input type="hidden" name="show" value="0">
+    <input type="checkbox" class="custom-control-input" name="show" value="1" id="show" <?= ($group->show == true) ? "checked" : ""  ?>>
+    <label class="custom-control-label" for="show">Exibir grupo</label>
 </div>

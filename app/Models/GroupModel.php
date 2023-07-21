@@ -28,5 +28,16 @@ class GroupModel extends Model
         "description" => "required|max_length[240]",
     ];
     
-    protected $validationMessages   = [];
+    protected $validationMessages   = [
+        "name" => [
+            "required" => "O campo <strong class='text-white'>nome</strong> é de preenchimento obrigatório.",
+            "min_length" => "O campo <strong class='text-white'>nome</strong> deve conter no minimo 3 caracteres.",
+            "max_length" => "O campo <strong class='text-white'>nome</strong> não pode passar de 125 caracteres.",
+            "is_unique" => "Esse <strong class='text-white'>nome</strong> já existe em nossa base de dados.",
+        ],
+        "description" => [
+            "required" => "O campo <strong class='text-white'>descrição</strong> é de preenchimento obrigatório.",
+            "max_length" => "O campo <strong class='text-white'>descrição</strong> não pode passar de 240 caracteres.",
+        ],
+    ];
 }
