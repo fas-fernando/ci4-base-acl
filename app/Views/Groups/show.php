@@ -44,6 +44,11 @@
                     </button>
                     <div class="dropdown-menu">
                         <a class="dropdown-item" href="<?= site_url("groups/edit/$group->id") ?>">Editar grupo</a>
+                        
+                        <?php if($group->id > 2) : ?>
+                            <a class="dropdown-item" href="<?= site_url("groups/permissions/$group->id") ?>">Gerenciar permissões</a>
+                        <?php endif ?>
+
                         <div class="dropdown-divider"></div>
 
                         <?php if ($group->deleted_at == null) : ?>

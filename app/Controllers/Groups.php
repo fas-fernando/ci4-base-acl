@@ -8,10 +8,14 @@ use App\Entities\Group;
 class Groups extends BaseController
 {
     private $groupModel;
+    private $groupPermissionModel;
+    private $permissionModel;
 
     public function __construct()
     {
         $this->groupModel = new \App\Models\groupModel();
+        $this->groupPermissionModel = new \App\Models\GroupPermissionModel();
+        $this->permissionModel = new \App\Models\PermissionModel();
     }
 
     public function index()
@@ -90,7 +94,7 @@ class Groups extends BaseController
         $group = new Group($post);
 
         if($this->groupModel->save($group)) {
-            $btnNewUser = anchor("users/create", "Novo grupo", ["class" => "btn btn-warning mt-2"]);
+            $btnNewUser = anchor("groups/create", "Novo grupo", ["class" => "btn btn-warning mt-2"]);
             session()->setFlashdata("success", "Dados salvo com sucesso. <br> $btnNewUser");
 
             $return["id"] = $this->groupModel->getInsertID();
@@ -204,6 +208,35 @@ class Groups extends BaseController
         $this->groupModel->protect(false)->save($group);
 
         return redirect()->back()->with("success", "Grupo " . esc($group->name) . " restaurado com sucesso");
+    }
+
+    public function permissions(int $id = null)
+    {
+        $group = $this->searchGroupOr404($id);
+
+        if($group->id < 3) {
+            return redirect()->back()->with("info", "Não é necessário atribuir ou remover permissões de acesso para o grupo <strong>" . esc($group->name) . "</strong>");
+        }
+
+        if($group->id > 2) {
+            $group->permissions = $this->groupPermissionModel->getPermissionsGroup($group->id, 10);
+            $group->pager = $this->groupPermissionModel->pager;
+        }
+
+        $data = [
+            "title" => "Gerenciando as permissões do grupo " . esc($group->name),
+            "group" => $group,
+        ];
+
+        if(!empty($group->permissions)) {
+            $existingPermission = array_column($group->permissions, "permission_id");
+
+            $data["availablePermissions"] = $this->permissionModel->whereNotIn("id", $existingPermission)->findAll();
+        } else {
+            $data["availablePermissions"] = $this->permissionModel->findAll();
+        }
+
+        return view("Groups/permissions", $data);
     }
 
     private function searchGroupOr404(int $id = null)
