@@ -137,8 +137,6 @@ class Groups extends BaseController
 
         $groupName = esc($group->name);
 
-        // $group->id = 3; // DEBUG
-
         if($group->id < 3) {
             $return["error"] = "Por favor, verifique os erros abaixo e tente novamente.";
             $return["errors_model"] = ["group" => "O grupo <strong>$groupName</strong> não pode ser atualizado."];
@@ -237,6 +235,51 @@ class Groups extends BaseController
         }
 
         return view("Groups/permissions", $data);
+    }
+
+    public function savePermissions()
+    {
+        if(!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $return["token"] = csrf_hash();
+        $post = $this->request->getPost();
+
+        $group = $this->searchGroupOr404($post["id"]);
+
+        if(empty($post["permission_id"])) {
+            $return["error"] = "Por favor, verifique os erros abaixo e tente novamente.";
+            $return["errors_model"] = ["permission_id" => "Escolha uma ou mais permissões para salvar"];
+        
+            return $this->response->setJSON($return);
+        }
+
+        $permissionPush = [];
+
+        foreach ($post["permission_id"] as $permission_id) {
+            array_push($permissionPush, [
+                "group_id" => $group->id,
+                "permission_id" => $permission_id,
+            ]);
+        }
+
+        $this->groupPermissionModel->insertBatch($permissionPush);
+
+        session()->setFlashdata("success", "Permissões inseridas com sucesso");
+
+        return $this->response->setJSON($return);
+    }
+
+    public function removePermission(int $main_id = null)
+    {
+        if($this->request->getMethod() === "post") {
+            $this->groupPermissionModel->delete($main_id);
+
+            return redirect()->back()->with("success", "Permissão removida com sucesso");
+        }
+
+        return redirect()->back();
     }
 
     private function searchGroupOr404(int $id = null)
