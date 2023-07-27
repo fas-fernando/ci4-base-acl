@@ -8,10 +8,14 @@ use App\Entities\User;
 class Users extends BaseController
 {
     private $userModel;
+    private $groupUserModel;
+    private $groupModel;
 
     public function __construct()
     {
         $this->userModel = new \App\Models\UserModel();
+        $this->groupUserModel = new \App\Models\GroupUserModel();
+        $this->groupModel = new \App\Models\GroupModel();
     }
 
     public function index()
@@ -302,6 +306,33 @@ class Users extends BaseController
         if($image != null) {
             $this->showFile("users", $image);
         }
+    }
+
+    public function groups(int $id = null)
+    {
+        $user = $this->searchUserOr404($id);
+        $user->groups = $this->groupUserModel->getGroupUser($user->id, 5);
+        $user->pager = $this->groupUserModel->pager;
+
+        $data = [
+            "title" => "Gerenciando os grupos do usuário " . esc($user->name),
+            "user" => $user,
+        ];
+
+        if(!empty($user->groups)) {
+            $existingGroup = array_column($user->groups, "group_id");
+
+            $data["availableGroups"] = $this->groupModel
+                ->where("id !=", 2)
+                ->whereNotIn("id", $existingGroup)
+                ->findAll();
+        } else {
+            $data["availableGroups"] = $this->groupModel
+                ->where("id !=", 2)
+                ->findAll();
+        }
+
+        return view("Users/groups", $data);
     }
 
     private function searchUserOr404(int $id = null)

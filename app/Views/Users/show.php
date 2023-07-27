@@ -48,6 +48,7 @@
                 </button>
                 <div class="dropdown-menu">
                     <a class="dropdown-item" href="<?= site_url("users/edit/$user->id") ?>">Editar usuário</a>
+                    <a class="dropdown-item" href="<?= site_url("users/groups/$user->id") ?>">Gerenciar grupos</a>
                     <div class="dropdown-divider"></div>
 
                     <?php if($user->deleted_at == null) : ?>
