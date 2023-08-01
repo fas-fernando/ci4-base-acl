@@ -319,6 +319,10 @@ class Users extends BaseController
             "user" => $user,
         ];
 
+        if(in_array(2, array_column($user->groups, "group_id"))) {
+            return redirect()->to(site_url("users/show/$user->id"))->with("info", "Esse usuário é um cliente e não é permitido alterar ou remover do grupo de acesso.");
+        }
+
         if(!empty($user->groups)) {
             $existingGroup = array_column($user->groups, "group_id");
 
