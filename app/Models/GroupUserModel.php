@@ -13,7 +13,7 @@ class GroupUserModel extends Model
     public function getGroupUser(int $user_id, int $quant_paginate)
     {
         $attr = [
-            "groups_users.id",
+            "groups_users.id AS main_id",
             "groups.id AS group_id",
             "groups.name",
             "groups.description",

@@ -52,7 +52,7 @@
                             <select name="group_id[]" class="selectize" multiple>
                                 <option value="">Escolha...</option>
                                 <?php foreach ($availableGroups as $group) : ?>
-                                    <option value="<?= $group->grupo_id ?>"><?= esc($group->name) ?></option>
+                                    <option value="<?= $group->id ?>"><?= esc($group->name) ?></option>
                                 <?php endforeach ?>
                             </select>
                         </div>
@@ -76,7 +76,7 @@
                         <thead>
                             <tr>
                                 <th>Grupo</th>
-                                <th>DEscrição</th>
+                                <th>Descrição</th>
                                 <th class="float-right">Excluir</th>
                             </tr>
                         </thead>
@@ -87,7 +87,7 @@
                                     <td><?= esc($group_info->description) ?></td>
                                     <td>
                                         <?php $attr = ["onSubmit" => "return confirm('Tem certeza da exclusão do grupo?')"] ?>
-                                        <?= form_open("groups/removegroup/$group->id", $attr) ?>
+                                        <?= form_open("users/removegroup/$group->main_id", $attr) ?>
                                             <button type="submit" class="btn btn-sm btn-danger float-right"><i class="fa fa-trash"></i></button>
                                         <?= form_close() ?>
                                     </td>
@@ -122,7 +122,7 @@
 
             $.ajax({
                 type: "POST",
-                url: "<?= site_url("groups/savegroups") ?>",
+                url: "<?= site_url("users/savegroups") ?>",
                 data: new FormData(this),
                 dataType: "json",
                 contentType: false,
@@ -138,7 +138,7 @@
                     $("[name=csrf_ordem]").val(response.token);
                     
                     if(!response.error) {
-                        window.location.href = "<?= site_url("groups/groups/$group->id") ?>";
+                        window.location.href = "<?= site_url("users/groups/$user->id") ?>";
                     } else {
                         $("#response").html("<div class='alert alert-danger'>" + response.error + "</div>");
 
