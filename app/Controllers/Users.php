@@ -99,11 +99,6 @@ class Users extends BaseController
 
         $user = new User($post);
 
-        // echo "<pre>";
-        // print_r($user);
-        // echo "</pre>";
-        // exit;
-
         if($this->userModel->protect(false)->save($user)) {
             $btnNewUser = anchor("users/create", "Novo usuário", ["class" => "btn btn-warning mt-2"]);
             session()->setFlashdata("success", "Dados salvo com sucesso. <br> $btnNewUser");
@@ -319,9 +314,19 @@ class Users extends BaseController
             "user" => $user,
         ];
 
-        if(in_array(2, array_column($user->groups, "group_id"))) {
+        $groupClient = 2;
+        $groupAdmin = 1;
+
+        if(in_array($groupClient, array_column($user->groups, "group_id"))) {
             return redirect()->to(site_url("users/show/$user->id"))->with("info", "Esse usuário é um cliente e não é permitido alterar ou remover do grupo de acesso.");
         }
+
+        if(in_array($groupAdmin, array_column($user->groups, "group_id"))) {
+            $user->full_control = true;
+            return view("Users/groups", $data);
+        }
+
+        $user->full_control = false;
 
         if(!empty($user->groups)) {
             $existingGroup = array_column($user->groups, "group_id");
@@ -339,6 +344,81 @@ class Users extends BaseController
         return view("Users/groups", $data);
     }
 
+    public function saveGroups()
+    {
+        if(!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $return["token"] = csrf_hash();
+        $post = $this->request->getPost();
+        
+        $user = $this->searchUserOr404($post["id"]);
+
+        if(empty($post["group_id"])) {
+            $return["error"] = "Por favor, verifique os erros abaixo e tente novamente.";
+            $return["errors_model"] = ["group_id" => "Escolha um ou mais grupos para salvar"];
+        
+            return $this->response->setJSON($return);
+        }
+
+        if(in_array(2, $post["group_id"])) {
+            $return["error"] = "Por favor, verifique os erros abaixo e tente novamente.";
+            $return["errors_model"] = ["group_id" => "O grupo de clientes não pode ser atribuido de forma manual."];
+        
+            return $this->response->setJSON($return);
+        }
+
+        if(in_array(1, $post["group_id"])) {
+            $groupAdmin = [
+                "user_id" => $user->id,
+                "group_id" => 1,
+            ];
+
+            $this->groupUserModel->insert($groupAdmin);
+
+            $this->groupUserModel->where("group_id !=", 1)
+                ->where("user_id", $user->id)
+                ->delete();
+
+            session()->setFlashdata("success", "Grupos inseridos com sucesso");
+
+            return $this->response->setJSON($return);
+        }
+
+        $groupPush = [];
+
+        foreach ($post["group_id"] as $group_id) {
+            array_push($groupPush, [
+                "user_id" => $user->id,
+                "group_id" => $group_id,
+            ]);
+        }
+
+        $this->groupUserModel->insertBatch($groupPush);
+
+        session()->setFlashdata("success", "Grupos inseridos com sucesso");
+
+        return $this->response->setJSON($return);
+    }
+
+    public function removeGroup(int $main_id = null)
+    {
+        if($this->request->getMethod() === "post") {
+            $groupUser = $this->searchGroupUserOr404($main_id);
+
+            if($groupUser->group_id == 2) {
+                return redirect()->to(site_url("users/show/$groupUser->user_id"))->with("info", "Não é permitida a exclusão do usuário do grupo de clientes");
+            }
+
+            $this->groupUserModel->delete($main_id);
+
+            return redirect()->back()->with("success", "Usuário removido do grupo de acesso com sucesso.");
+        }
+
+        return redirect()->back();
+    }
+
     private function searchUserOr404(int $id = null)
     {
         $user = $this->userModel->withDeleted(true)->find($id);
@@ -348,6 +428,17 @@ class Users extends BaseController
         }
 
         return $user;
+    }
+
+    private function searchGroupUserOr404(int $main_id = null)
+    {
+        $groupUser = $this->groupUserModel->find($main_id);
+
+        if(!$main_id || !$groupUser) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound("Não encontramos grupo de acesso $main_id");
+        }
+
+        return $groupUser;
     }
 
     private function manipulateImage(string $imagePath, int $user_id)

@@ -43,7 +43,9 @@
         <div class="user-block block">
             <div class="block-body">
                 <?php if(empty($availableGroups)) : ?>
-                    <p class="contributions mt-0">Esse usuário já faz parte de todos os grupos disponiveis.</p>
+                    <?php if($user->full_control == true) : ?>
+                        <p class="contributions text-warning mt-0">Esse usuário pertence ao grupo de administrador, para alterar exclua-o do grupo para atribuir a outro.</p>
+                    <?php endif ?>
                 <?php else : ?>
                     <div id="response"></div>
                     <?= form_open("/", ["id" => "form"], ["id" => "$user->id"]) ?>
@@ -84,10 +86,10 @@
                             <?php foreach($user->groups as $group_info) : ?>
                                 <tr>
                                     <td><?= esc($group_info->name) ?></td>
-                                    <td><?= esc($group_info->description) ?></td>
+                                    <td><?= ellipsize($group_info->description, 30) ?></td>
                                     <td>
                                         <?php $attr = ["onSubmit" => "return confirm('Tem certeza da exclusão do grupo?')"] ?>
-                                        <?= form_open("users/removegroup/$group->main_id", $attr) ?>
+                                        <?= form_open("users/removegroup/$group_info->main_id", $attr) ?>
                                             <button type="submit" class="btn btn-sm btn-danger float-right"><i class="fa fa-trash"></i></button>
                                         <?= form_close() ?>
                                     </td>
