@@ -40,7 +40,7 @@ class UserModel extends Model
 
     protected function hashPassword(array $data)
     {
-        if(isset($data["data"]["password"])){
+        if (isset($data["data"]["password"])) {
             $data["data"]["password_hash"] = password_hash($data["data"]["password"], PASSWORD_DEFAULT);
             unset($data["data"]["password"]);
             unset($data["data"]["password_confirmation"]);
@@ -68,7 +68,7 @@ class UserModel extends Model
             ->join("groups_users", "groups_users.user_id = users.id")
             ->join("groups_permissions", "groups_permissions.group_id = groups_users.group_id")
             ->join("permissions", "permissions.id = groups_permissions.permission_id")
-            ->where("user.id", $user_id)
+            ->where("users.id", $user_id)
             ->groupBy("permissions.name")
             ->findAll();
     }

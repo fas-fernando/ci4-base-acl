@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Libraries\Authentication;
+
 class Home extends BaseController
 {
     public function index()
@@ -19,12 +20,13 @@ class Home extends BaseController
         $auth = new Authentication();
 
         // $auth->logout();
+        $auth->login("fas.alves.souza@gmail.com", "123456");
+        // dd($auth->getUserLogged());
 
-        // dd($auth->isLogged());
+        dd($auth->isLogged());
         // dd($auth->isClient());
 
 
-        // dd($auth->login("darius70@yahoo.com", "123456"));
         // dd($auth->getUserLogged());
     }
 }
