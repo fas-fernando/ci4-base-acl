@@ -17,7 +17,7 @@ class Home extends BaseController
 
     public function login()
     {
-        $auth = new Authentication();
+        $auth = service('auth');
 
         // $auth->logout();
         $auth->login("fas.alves.souza@gmail.com", "123456");
