@@ -21,9 +21,11 @@ class Home extends BaseController
 
         // $auth->logout();
         $auth->login("fas.alves.souza@gmail.com", "123456");
-        // dd($auth->getUserLogged());
+        $user = $auth->getUserLogged();
+        dd($user);
+        // dd($user->hasPermissionTo('edit-users'));
 
-        dd($auth->isLogged());
+        // dd($auth->isLogged());
         // dd($auth->isClient());
 
 
