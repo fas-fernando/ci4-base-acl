@@ -29,7 +29,7 @@ class Users extends BaseController
 
     public function getUsers()
     {
-        if(!$this->request->isAJAX()) {
+        if (!$this->request->isAJAX()) {
             return redirect()->back();
         }
 
@@ -43,7 +43,7 @@ class Users extends BaseController
         $data = [];
 
         foreach ($users as $key => $user) {
-            if($user->avatar != null) {
+            if ($user->avatar != null) {
                 $avatar = [
                     "src" => site_url("users/showAvatar/$user->avatar"),
                     "class" => "rounded-circle img-fluid",
@@ -90,7 +90,7 @@ class Users extends BaseController
 
     public function store()
     {
-        if(!$this->request->isAJAX()) {
+        if (!$this->request->isAJAX()) {
             return redirect()->back();
         }
 
@@ -99,7 +99,7 @@ class Users extends BaseController
 
         $user = new User($post);
 
-        if($this->userModel->protect(false)->save($user)) {
+        if ($this->userModel->protect(false)->save($user)) {
             $btnNewUser = anchor("users/create", "Novo usuário", ["class" => "btn btn-warning mt-2"]);
             session()->setFlashdata("success", "Dados salvo com sucesso. <br> $btnNewUser");
 
@@ -110,7 +110,7 @@ class Users extends BaseController
 
         $return["error"] = "Por favor, verifique os erros abaixo e tente novamente.";
         $return["errors_model"] = $this->userModel->errors();
-        
+
         return $this->response->setJSON($return);
     }
 
@@ -140,7 +140,7 @@ class Users extends BaseController
 
     public function update()
     {
-        if(!$this->request->isAJAX()) {
+        if (!$this->request->isAJAX()) {
             return redirect()->back();
         }
 
@@ -148,20 +148,20 @@ class Users extends BaseController
         $post = $this->request->getPost();
 
         $user = $this->searchUserOr404($post["id"]);
-        
-        if(empty($post["password"])) {
+
+        if (empty($post["password"])) {
             unset($post["password"]);
             unset($post["password_confirmation"]);
         }
 
         $user->fill($post);
 
-        if($user->hasChanged() == false) {
+        if ($user->hasChanged() == false) {
             $return["info"] = "Não há dados para atualizar.";
             return $this->response->setJSON($return);
         }
 
-        if($this->userModel->protect(false)->save($user)) {
+        if ($this->userModel->protect(false)->save($user)) {
             session()->setFlashdata("success", "Dados salvo com sucesso.");
 
             return $this->response->setJSON($return);
@@ -169,7 +169,7 @@ class Users extends BaseController
 
         $return["error"] = "Por favor, verifique os erros abaixo e tente novamente.";
         $return["errors_model"] = $this->userModel->errors();
-        
+
         return $this->response->setJSON($return);
     }
 
@@ -177,14 +177,14 @@ class Users extends BaseController
     {
         $user = $this->searchUserOr404($id);
 
-        if($user->deleted_at != null) {
+        if ($user->deleted_at != null) {
             return redirect()->back()->with("info", "Esse usuário já encontra-se excluído");
         }
 
-        if($this->request->getMethod() === "post") {
+        if ($this->request->getMethod() === "post") {
             $this->userModel->delete($user->id);
 
-            if($user->avatar != null) {
+            if ($user->avatar != null) {
                 $this->removeImageFileSystem($user->avatar);
             }
 
@@ -208,12 +208,12 @@ class Users extends BaseController
     {
         $user = $this->searchUserOr404($id);
 
-        if($user->deleted_at == null) {
+        if ($user->deleted_at == null) {
             return redirect()->back()->with("info", "Apenas usuários excluídos podem ser restaurado");
         }
-        
+
         $user->deleted_at = null;
-        
+
         $this->userModel->protect(false)->save($user);
 
         return redirect()->back()->with("success", "Usuário $user->name restaurado com sucesso");
@@ -269,7 +269,7 @@ class Users extends BaseController
 
         list($width, $height) = getimagesize($avatar->getPathName());
 
-        if($width < "300" || $height < "300") {
+        if ($width < "300" || $height < "300") {
             $return["error"] = "Por favor, verifique os erros abaixo e tente novamente.";
             $return["errors_model"] = ["dimension" => "A imagem não pode ser menor que 300 x 300 pixels"];
 
@@ -287,7 +287,7 @@ class Users extends BaseController
 
         $this->userModel->save($user);
 
-        if($oldImage != null) {
+        if ($oldImage != null) {
             $this->removeImageFileSystem($oldImage);
         }
 
@@ -298,7 +298,7 @@ class Users extends BaseController
 
     public function showAvatar(string $image = null)
     {
-        if($image != null) {
+        if ($image != null) {
             $this->showFile("users", $image);
         }
     }
@@ -317,18 +317,18 @@ class Users extends BaseController
         $groupClient = 2;
         $groupAdmin = 1;
 
-        if(in_array($groupClient, array_column($user->groups, "group_id"))) {
+        if (in_array($groupClient, array_column($user->groups, "group_id"))) {
             return redirect()->to(site_url("users/show/$user->id"))->with("info", "Esse usuário é um cliente e não é permitido alterar ou remover do grupo de acesso.");
         }
 
-        if(in_array($groupAdmin, array_column($user->groups, "group_id"))) {
+        if (in_array($groupAdmin, array_column($user->groups, "group_id"))) {
             $user->full_control = true;
             return view("Users/groups", $data);
         }
 
         $user->full_control = false;
 
-        if(!empty($user->groups)) {
+        if (!empty($user->groups)) {
             $existingGroup = array_column($user->groups, "group_id");
 
             $data["availableGroups"] = $this->groupModel
@@ -346,30 +346,30 @@ class Users extends BaseController
 
     public function saveGroups()
     {
-        if(!$this->request->isAJAX()) {
+        if (!$this->request->isAJAX()) {
             return redirect()->back();
         }
 
         $return["token"] = csrf_hash();
         $post = $this->request->getPost();
-        
+
         $user = $this->searchUserOr404($post["id"]);
 
-        if(empty($post["group_id"])) {
+        if (empty($post["group_id"])) {
             $return["error"] = "Por favor, verifique os erros abaixo e tente novamente.";
             $return["errors_model"] = ["group_id" => "Escolha um ou mais grupos para salvar"];
-        
+
             return $this->response->setJSON($return);
         }
 
-        if(in_array(2, $post["group_id"])) {
+        if (in_array(2, $post["group_id"])) {
             $return["error"] = "Por favor, verifique os erros abaixo e tente novamente.";
             $return["errors_model"] = ["group_id" => "O grupo de clientes não pode ser atribuido de forma manual."];
-        
+
             return $this->response->setJSON($return);
         }
 
-        if(in_array(1, $post["group_id"])) {
+        if (in_array(1, $post["group_id"])) {
             $groupAdmin = [
                 "user_id" => $user->id,
                 "group_id" => 1,
@@ -404,10 +404,10 @@ class Users extends BaseController
 
     public function removeGroup(int $main_id = null)
     {
-        if($this->request->getMethod() === "post") {
+        if ($this->request->getMethod() === "post") {
             $groupUser = $this->searchGroupUserOr404($main_id);
 
-            if($groupUser->group_id == 2) {
+            if ($groupUser->group_id == 2) {
                 return redirect()->to(site_url("users/show/$groupUser->user_id"))->with("info", "Não é permitida a exclusão do usuário do grupo de clientes");
             }
 
@@ -419,11 +419,33 @@ class Users extends BaseController
         return redirect()->back();
     }
 
+    public function editPassword()
+    {
+        $data = [
+            "title" => "Editar senha do usuário"
+        ];
+
+        return view("Users/edit_password", $data);
+    }
+
+    public function updatePassword()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $return["token"] = csrf_hash();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////// PRIVADOS //////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
     private function searchUserOr404(int $id = null)
     {
         $user = $this->userModel->withDeleted(true)->find($id);
 
-        if(!$id || !$user) {
+        if (!$id || !$user) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound("Não encontramos o usuário $id");
         }
 
@@ -434,7 +456,7 @@ class Users extends BaseController
     {
         $groupUser = $this->groupUserModel->find($main_id);
 
-        if(!$main_id || !$groupUser) {
+        if (!$main_id || !$groupUser) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound("Não encontramos grupo de acesso $main_id");
         }
 
@@ -467,7 +489,7 @@ class Users extends BaseController
     {
         $imagePath = WRITEPATH . "uploads/users/$image";
 
-        if(is_file($imagePath)) {
+        if (is_file($imagePath)) {
             unlink($imagePath);
         }
     }
