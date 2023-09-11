@@ -39,6 +39,7 @@
                             <div class="content">
                                 <?= form_open("/", ["id" => "form", "class" => "form-validate"]) ?>
                                 <div id="response"></div>
+                                <?= $this->include("Layout/_messages") ?>
                                 <div class="form-group">
                                     <input id="email" type="email" name="email" required data-msg="Insira seu e-mail de acesso" class="input-material">
                                     <label for="email" class="label-material">E-mail de acesso</label>
@@ -108,7 +109,7 @@
                     },
                     error: function() {
                         alert("Não foi possível processar a solicitação. Por favor entre em contato com nosso suporte técnico.");
-                        $("#btn-login").val("Salvar");
+                        $("#btn-login").val("Entrar");
                         $("#btn-login").removeAttr("disabled");
                     }
                 });
