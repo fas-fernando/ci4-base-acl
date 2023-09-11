@@ -435,6 +435,36 @@ class Users extends BaseController
         }
 
         $return["token"] = csrf_hash();
+
+        $current_password = $this->request->getPost("current_password");
+
+        $user = user_logged();
+
+        if ($user->checkPassword($current_password) === false) {
+            $return["error"] = "Por favor, verifique os erros abaixo e tente novamente.";
+            $return["errors_model"] = ["current_password" => "Senha atual está inválida"];
+
+            return $this->response->setJSON($return);
+        }
+
+        $user->fill($this->request->getPost());
+
+        if ($user->hasChanged() === false) {
+            $return["info"] = "Não há dados para atualizar";
+
+            return $this->response->setJSON($return);
+        }
+
+        if ($this->userModel->save($user)) {
+            $return["success"] = "Dados salvo com sucesso";
+
+            return $this->response->setJSON($return);
+        }
+
+        $return["error"] = "Por favor, verifique os erros abaixo e tente novamente.";
+        $return["errors_model"] = $this->userModel->errors();
+
+        return $this->response->setJSON($return);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////

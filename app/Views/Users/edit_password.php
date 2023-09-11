@@ -27,7 +27,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-control-label">Nova Senha</label>
-                    <input type="password" class="form-control" name="new_password">
+                    <input type="password" class="form-control" name="password">
                 </div>
                 <div class="form-group">
                     <label class="form-control-label">Confirmar Nova Senha</label>
