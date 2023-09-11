@@ -38,6 +38,7 @@
                         <div class="form d-flex align-items-center">
                             <div class="content">
                                 <?= form_open("/", ["id" => "form", "class" => "form-validate"]) ?>
+                                <div id="response"></div>
                                 <div class="form-group">
                                     <input id="email" type="email" name="email" required data-msg="Insira seu e-mail de acesso" class="input-material">
                                     <label for="email" class="label-material">E-mail de acesso</label>
@@ -60,15 +61,64 @@
                 <p><?= date('Y') ?> &copy; Todos os direitos <a target="_blank" href="https://etmo.com.br">ETMO</a>.</p>
             </div>
         </div>
+    </div>
 
-        <script src="<?= site_url("resources/plugin/jquery/jquery.min.js") ?>"></script>
-        <script src="<?= site_url("resources/plugin/popper.js/umd/popper.min.js") ?>"> </script>
-        <script src="<?= site_url("resources/plugin/bootstrap/js/bootstrap.min.js") ?>"></script>
-        <script src="<?= site_url("resources/plugin/jquery.cookie/jquery.cookie.js") ?>"> </script>
-        <script src="<?= site_url("resources/plugin/chart.js/Chart.min.js") ?>"></script>
-        <script src="<?= site_url("resources/plugin/jquery-validation/jquery.validate.min.js") ?>"></script>
-        <script src="<?= site_url("resources/js/charts-home.js") ?>"></script>
-        <script src="<?= site_url("resources/js/front.js") ?>"></script>
+    <script src="<?= site_url("resources/plugin/jquery/jquery.min.js") ?>"></script>
+    <script src="<?= site_url("resources/plugin/popper.js/umd/popper.min.js") ?>"> </script>
+    <script src="<?= site_url("resources/plugin/bootstrap/js/bootstrap.min.js") ?>"></script>
+    <script src="<?= site_url("resources/plugin/jquery.cookie/jquery.cookie.js") ?>"> </script>
+    <script src="<?= site_url("resources/plugin/chart.js/Chart.min.js") ?>"></script>
+    <script src="<?= site_url("resources/plugin/jquery-validation/jquery.validate.min.js") ?>"></script>
+    <script src="<?= site_url("resources/js/charts-home.js") ?>"></script>
+    <script src="<?= site_url("resources/js/front.js") ?>"></script>
+
+    <script>
+        $(document).ready(function() {
+            $("#form").on("submit", function(event) {
+                event.preventDefault();
+
+                $.ajax({
+                    type: "POST",
+                    url: "<?= site_url("login/create") ?>",
+                    data: new FormData(this),
+                    dataType: "json",
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+                    beforeSend: function() {
+                        $("#response").html("");
+                        $("#btn-login").val("Por favor aguarde...");
+                    },
+                    success: function(response) {
+                        $("#btn-login").val("Entrar");
+                        $("#btn-login").removeAttr("disabled");
+                        $("[name=csrf_ordem]").val(response.token);
+
+                        if (!response.error) {
+                            window.location.href = "<?= site_url() ?>" + response.redirect;
+                        } else {
+                            $("#response").html("<div class='alert alert-danger'>" + response.error + "</div>");
+
+                            if (response.errors_model) {
+                                $.each(response.errors_model, function(key, value) {
+                                    $("#response").append("<ul class='list-unstyled'><li class='text-danger'>" + value + "</li></ul>");
+                                });
+                            }
+                        }
+                    },
+                    error: function() {
+                        alert("Não foi possível processar a solicitação. Por favor entre em contato com nosso suporte técnico.");
+                        $("#btn-login").val("Salvar");
+                        $("#btn-login").removeAttr("disabled");
+                    }
+                });
+            });
+
+            $("#form").submit(function() {
+                $(this).find(":submit").attr("disabled", "disabled");
+            });
+        });
+    </script>
 </body>
 
 </html>
